@@ -1,0 +1,4 @@
+Football
+========
+
+Bayesian football predictions
