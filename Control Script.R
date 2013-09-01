@@ -8,9 +8,11 @@ library(cairoDevice)
 library(MASS)
 library(gridExtra)
 
-set.seed(42)
+seed <- 42
+set.seed(seed)
 
 source(file="Scripts/Miscellaneous - Functions.R")
 
 
 source(file="Scripts/Data Processing - Data Import.R")
+source(file="Scripts/Data Processing - Data Manipulation.R")
