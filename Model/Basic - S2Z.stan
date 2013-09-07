@@ -10,14 +10,11 @@ parameters{
 	real Base_H;
 	real Base_A;
 
-	real Skill_free[NT-1];
+	vector[NT] Skill_free;
 }
 transformed parameters{
 	vector[NT] Skill;
-	Skill[1] <- 0;
-	for (i in 1:(NT-1)){
-		Skill[i+1] <- Skill_free[i];	
-	}
+	Skill <- Skill_free - mean(Skill_free);
 	
 }
 model{
