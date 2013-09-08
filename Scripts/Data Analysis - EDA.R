@@ -1,6 +1,5 @@
 load(file="Data/Processed Data/MS.RData")
 
-
 # HomeGoals <- MS[,list(Goals=FTHG),by=c("Season","Div","Date","HomeTeam")]
 # AwayGoals <- MS[,list(Goals=FTAG),by=c("Season","Div","Date","AwayTeam")]
 
@@ -22,21 +21,48 @@ MS[,CGHTS:=.N,by=c("Season","HomeTeam")]
 
 MS <- MS[complete.cases(MS),]
 
-a <- MS[Div=="E0",list(FTHG)]
+c <- MS[Div=="E0",list(FTHG)]
 
-b <- a$FTHG
+c <- c$FTHG
 
-fitdistr(x=b,densfun="Poisson")
-fitdistr(x=b,densfun="negative binomial")
+c <- prop.table(table(c))
 
-rpois(n=1e5,lambda=1.52379032)
-rnbinom(n=1e5,size=16.33714832,mu=1.52379039)
 
-gd <- data.frame(a=rpois(n=49600,lambda=1.52379032),
-                 b=rnbinom(n=49600,size=16.33714832,mu=1.52379039),
-                 t=rep(b,10))
+gd3 <- data.frame(x=as.integer(names(c)),t=as.numeric(c))
 
-gd$b <- as.integer(gd$b)
+
+a <- fitdistr(x=b,densfun="Poisson")
+b <- fitdistr(x=b,densfun="negative binomial")
+
+a <- a$estimate
+b <- b$estimate
+
+
+a[names(a)=="lambda"]
+b[names(b)=="size"]
+b[names(b)=="mu"]
+
+a_max <- qpois(p=1-1e-7,lambda=a[names(a)=="lambda"])+1
+b_max <- qnbinom(p=1-1e-7,size=b[names(b)=="size"],mu=b[names(b)=="mu"])+1
+
+dpois(x=seq(0,a_max),lambda=a[names(a)=="lambda"])
+dnbinom(x=seq(0,b_max),size=b[names(b)=="size"],mu=b[names(b)=="mu"])
+        
+
+gd1 <- data.frame(x=seq(0,a_max),p=dpois(x=seq(0,a_max),lambda=a[names(a)=="lambda"]))
+gd2 <- data.frame(x=seq(0,b_max),d=dnbinom(x=seq(0,b_max),size=b[names(b)=="size"],mu=b[names(b)=="mu"]))
+
+
+head(gd1)
+head(gd2)
+head(gd3)
+
+g <- ggplot()
+
+g + geom_bar(data=gd1,aes(x=x,y=p),stat="identity") + 
+  + geom_bar(data=gd1,aes(x=x,y=p),stat="identity") + 
+  + geom_bar(data=gd1,aes(x=x,y=p),stat="identity") 
+  
 
 A <- ggplot(gd)+theme_bw()+scale_x_discrete(limit=0:12)+
   geom_histogram(fill="red",alpha=0.2,aes(x=a),binwidth=1)+
